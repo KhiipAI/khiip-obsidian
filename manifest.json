@@ -1,0 +1,10 @@
+{
+	"id": "khiip",
+	"name": "Khiip",
+	"version": "0.2.0",
+	"minAppVersion": "1.4.0",
+	"description": "Capture + recall through your local Khiip daemon — URLs in, markdown in your vault, semantic recall over everything",
+	"author": "Khiip",
+	"authorUrl": "https://khiip.com",
+	"isDesktopOnly": true
+}

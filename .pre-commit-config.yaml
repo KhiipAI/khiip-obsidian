@@ -1,0 +1,10 @@
+# Pre-commit hooks for this repo.
+#   gitleaks — secret scanner; blocks accidental token/credential commits.
+#
+# After cloning, run once: pre-commit install
+
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks

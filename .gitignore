@@ -1,0 +1,25 @@
+# Build artifacts
+main.js
+main.js.map
+*.tgz
+
+# Dependencies
+node_modules/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Local agent stubs (never committed)
+/CLAUDE.md
+/_internal/
+
+# Build / debug junk
+*.log
+.cache/
+.parcel-cache/
+
+# Local symlinks to test vaults (these get created during smoke testing;
+# never commit a symlink pointing at the operator's vault)
+test-vault/

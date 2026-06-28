@@ -1,0 +1,927 @@
+/* Khiip Obsidian plugin styles. PROVISIONAL — first brand + sidebar-info
+   design iteration; up for debate, nothing locked.
+
+   Design tokens live on `body` so they're shared by the sidebar chrome AND the
+   in-note `> [!khiip-<source>]` banner callouts — one source-of-truth for the
+   per-source colours, so a source reads the same colour wherever it appears. */
+body {
+	/* Per-source identity colours (RGB triples → used via rgb()/rgba()), shared by
+	   the sidebar pills/icons AND the in-note banners. System: iconic platforms get
+	   their brand colour; type/utility sources get distinct non-brand hues. Colours
+	   are spread so the platforms coming down the pipeline (Instagram/TikTok/Bluesky)
+	   each get a distinct slot.
+
+	   Social brands ─────────────────────────────────────────────── */
+	--khiip-src-x:         24, 24, 27;    /* X — INK (its brand is black/white; adapts to near-white on dark, set below) */
+	--khiip-src-reddit:    255, 69, 0;    /* Reddit — orange */
+	--khiip-src-youtube:   255, 0, 0;     /* YouTube — red */
+	--khiip-src-bluesky:   0, 133, 255;   /* Bluesky — sky blue (reserved; blue belongs to the blue-brand platforms, not X) */
+	--khiip-src-facebook:  24, 119, 242;  /* Facebook — brand blue (reserved) */
+	--khiip-src-instagram: 225, 48, 108;  /* Instagram — magenta-pink, the gradient's signature (reserved) */
+	--khiip-src-tiktok:    124, 58, 237;  /* TikTok — purple (its cyan+red blend; reserved) */
+	/* Type / utility sources ──────────────────────────────────────── */
+	--khiip-src-web:       34, 197, 94;   /* Web — green (generic "globe / go") */
+	--khiip-src-wiki:      6, 182, 212;   /* Wikipedia — cyan (no brand colour) */
+	--khiip-src-pdf:       100, 116, 139; /* PDF — slate (document-neutral; frees purple for TikTok) */
+	--khiip-src-default:   130, 130, 130; /* unknown / future source */
+
+	/* Khiip teal accent — deep on light surfaces; the brighter derived teal on
+	   dark (the same mode-adaptive convention as the www/docs sites). */
+	--khiip-accent: #0e5e5a;
+}
+.theme-dark {
+	--khiip-accent: #2f9089;
+	--khiip-src-x: 228, 228, 231;  /* X ink → near-white on dark so the mark/border stays visible */
+}
+
+/* ------------------------------------------------------------------ *
+ * Sidebar
+ * ------------------------------------------------------------------ */
+.khiip-sidebar {
+	padding: 0.6rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+/* Brand header */
+.khiip-header {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	padding-bottom: 0.5rem;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.khiip-brand-row {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+}
+
+.khiip-brand {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+}
+
+.khiip-mark {
+	width: 19px;
+	height: 19px;
+	color: var(--khiip-accent);
+	flex-shrink: 0;
+}
+
+.khiip-wordmark {
+	font-weight: 600;
+	font-size: 0.95em;
+	letter-spacing: 0.01em;
+	color: var(--text-normal);
+}
+
+/* Status dot rides to the right edge of the brand row; detail text sits below. */
+.khiip-brand-row .khiip-status-dot {
+	margin-left: auto;
+}
+
+.khiip-status-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--text-muted);
+	flex-shrink: 0;
+}
+
+.khiip-status-dot.khiip-status-ok { background: var(--color-green); }
+.khiip-status-dot.khiip-status-degraded { background: var(--color-orange); }
+.khiip-status-dot.khiip-status-down { background: var(--color-red); }
+.khiip-status-dot.khiip-status-unknown { background: var(--text-muted); }
+
+.khiip-status-text {
+	font-size: 0.76em;
+	color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------ *
+ * Daemon-down setup card — install + start guidance for a plugin-first
+ * user who hasn't started the daemon yet (the Copilot/Ollama "test
+ * connection" onboarding pattern). Toggled against .khiip-connected.
+ * ------------------------------------------------------------------ */
+.khiip-setup {
+	display: flex;
+	flex-direction: column;
+	gap: 0.55rem;
+	padding: 0.7rem 0.75rem;
+	border: 1px solid var(--background-modifier-border);
+	border-left: 3px solid var(--khiip-accent);
+	border-radius: 6px;
+	background: var(--background-secondary);
+}
+
+.khiip-setup-title {
+	font-weight: 600;
+	font-size: 0.92em;
+	color: var(--text-normal);
+}
+
+.khiip-setup-lead {
+	margin: 0;
+	font-size: 0.8em;
+	line-height: 1.45;
+	color: var(--text-muted);
+}
+
+.khiip-setup-cmd {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.4rem;
+	padding: 0.5rem 0.6rem;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 5px;
+	background: var(--background-primary);
+}
+
+.khiip-setup-cmd-text {
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+	white-space: pre-wrap;
+	word-break: break-word;
+	font-family: var(--font-monospace);
+	font-size: 0.78em;
+	color: var(--text-normal);
+	background: none;
+}
+
+.khiip-setup-copy {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.2rem;
+	background: transparent;
+	box-shadow: none;
+	color: var(--text-muted);
+	cursor: pointer;
+}
+
+.khiip-setup-copy:hover {
+	color: var(--khiip-accent);
+}
+
+.khiip-setup-copy svg {
+	width: 14px;
+	height: 14px;
+}
+
+.khiip-setup-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+}
+
+.khiip-setup-test.mod-cta {
+	background: var(--khiip-accent);
+}
+
+.khiip-setup-guide {
+	font-size: 0.8em;
+	color: var(--khiip-accent);
+	text-decoration: none;
+}
+
+.khiip-setup-guide:hover {
+	text-decoration: underline;
+}
+
+.khiip-setup-note {
+	margin: 0;
+	font-size: 0.72em;
+	line-height: 1.4;
+	color: var(--text-muted);
+}
+
+/* Section headers — small-caps teal labels */
+.khiip-section h4 {
+	margin: 0 0 0.4rem 0;
+	font-size: 0.72em;
+	font-weight: 600;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: var(--khiip-accent);
+}
+
+.khiip-section-count {
+	color: var(--text-muted);
+	font-weight: 500;
+	letter-spacing: 0;
+}
+
+.khiip-section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+/* Capture button — primary action, full-width on the persistent surface */
+.khiip-capture-btn {
+	width: 100%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+}
+
+.khiip-capture-btn.mod-cta {
+	background: var(--khiip-accent);
+}
+
+.khiip-capture-btn-icon {
+	display: inline-flex;
+}
+
+.khiip-capture-btn-icon svg {
+	width: 15px;
+	height: 15px;
+}
+
+/* Recall search row */
+.khiip-search-row {
+	display: flex;
+	gap: 0.4rem;
+	margin-bottom: 0.5rem;
+}
+
+.khiip-search-input {
+	flex: 1;
+	min-width: 0;
+}
+
+.khiip-search-input:focus {
+	border-color: var(--khiip-accent);
+	box-shadow: 0 0 0 1px var(--khiip-accent);
+}
+
+.khiip-search-btn {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.khiip-search-btn.mod-cta {
+	background: var(--khiip-accent);
+}
+
+.khiip-search-btn svg {
+	width: 16px;
+	height: 16px;
+}
+
+/* Day dividers in the recents timeline */
+.khiip-day-divider {
+	font-size: 0.7em;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+	margin: 0.55rem 0 0.2rem;
+	padding-left: 0.1rem;
+}
+
+.khiip-day-divider:first-child {
+	margin-top: 0;
+}
+
+/* Result rows (shared by recall + recents) */
+.khiip-result-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.45rem;
+	padding: 0.4rem 0.5rem;
+	border-radius: 5px;
+	margin-bottom: 0.1rem;
+}
+
+.khiip-result-row:hover {
+	background: var(--background-modifier-hover);
+}
+
+.khiip-row-icon {
+	flex-shrink: 0;
+	display: inline-flex;
+	margin-top: 0.05rem;
+	color: rgb(var(--src, var(--khiip-src-default)));
+}
+
+.khiip-row-icon svg {
+	width: 15px;
+	height: 15px;
+}
+
+.khiip-result-body {
+	flex: 1;
+	min-width: 0;
+	cursor: pointer;
+}
+
+.khiip-result-title {
+	font-weight: 500;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.khiip-result-meta {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin-top: 0.2rem;
+	font-size: 0.76em;
+	color: var(--text-muted);
+}
+
+/* Source pill — tinted to the platform colour via the per-source --src var. */
+.khiip-source {
+	padding: 0.02rem 0.35rem;
+	border-radius: 3px;
+	font-weight: 500;
+	color: rgb(var(--src, var(--khiip-src-default)));
+	background: rgba(var(--src, var(--khiip-src-default)), 0.13);
+}
+
+/* Map each source class to its colour triple — drives BOTH the pill and the
+   leading row icon above (both read `--src`). */
+.khiip-source-x         { --src: var(--khiip-src-x); }
+.khiip-source-reddit    { --src: var(--khiip-src-reddit); }
+.khiip-source-youtube   { --src: var(--khiip-src-youtube); }
+.khiip-source-bluesky   { --src: var(--khiip-src-bluesky); }
+.khiip-source-facebook  { --src: var(--khiip-src-facebook); }
+.khiip-source-instagram { --src: var(--khiip-src-instagram); }
+.khiip-source-tiktok    { --src: var(--khiip-src-tiktok); }
+.khiip-source-web       { --src: var(--khiip-src-web); }
+.khiip-source-wiki      { --src: var(--khiip-src-wiki); }
+.khiip-source-pdf       { --src: var(--khiip-src-pdf); }
+
+.khiip-time {
+	color: var(--text-faint);
+}
+
+.khiip-score {
+	margin-left: auto;
+	font-variant-numeric: tabular-nums;
+	color: var(--text-faint);
+}
+
+.khiip-empty,
+.khiip-loading,
+.khiip-error {
+	font-style: italic;
+	color: var(--text-muted);
+	padding: 0.4rem;
+	font-size: 0.85em;
+}
+
+.khiip-error {
+	color: var(--color-red);
+}
+
+/* ------------------------------------------------------------------ *
+ * In-note per-source identity banners
+ *
+ * The daemon writes a `> [!khiip-<source>]` callout at the top of each note's
+ * body; these rules give each source its colour + icon. The colour triples are
+ * the SAME --khiip-src-* tokens the sidebar uses, so a capture's source reads
+ * identically in the note and in the sidebar.
+ * ------------------------------------------------------------------ */
+.callout[data-callout="khiip-x"]       { --callout-color: var(--khiip-src-x);       --callout-icon: khiip-x; }
+.callout[data-callout="khiip-reddit"]  { --callout-color: var(--khiip-src-reddit);  --callout-icon: khiip-reddit; }
+.callout[data-callout="khiip-youtube"] { --callout-color: var(--khiip-src-youtube); --callout-icon: khiip-youtube; }
+.callout[data-callout="khiip-web"]     { --callout-color: var(--khiip-src-web);     --callout-icon: globe; }
+.callout[data-callout="khiip-wiki"]    { --callout-color: var(--khiip-src-wiki);    --callout-icon: book-open; }
+.callout[data-callout="khiip-pdf"]     { --callout-color: var(--khiip-src-pdf);     --callout-icon: file-text; }
+
+/* Capture card framing. ONE outline wraps the whole capture (header + body). The
+   identity bar + the HEADER ZONE (title + meta + engagement) carry a platform tint
+   so they read as distinct; the BODY has no background — plain theme surface,
+   still inside the same card outline — so long threads / transcripts / articles
+   stay readable. Body text + links use the theme's normal colours. */
+.callout[data-callout^="khiip-"] {
+	border: 1px solid rgba(var(--callout-color), 0.35);
+	background-color: transparent;
+	position: relative;  /* positioning context for the .khiip-mark imprint */
+}
+
+/* Brand imprint — small, muted wordmark in the top-right corner of EVERY card
+   (free + Pro), our signature. Text (no image asset); identifiable so reposts
+   market Khiip. Tasteful: faint + tiny + non-interactive so a private vault
+   reads it as a signature, not an ad. */
+.khiip-mark {
+	position: absolute;
+	top: 0.85em;      /* vertically centered on the identity (title) bar */
+	right: 0.85em;    /* even with top — symmetric inset in the corner */
+	line-height: 0;
+	opacity: 0.85;
+	pointer-events: none;
+	user-select: none;
+	z-index: 1;
+	/* Khiip brand teal — the SAME token used across the plugin + the website
+	   mark (--khiip-accent = #0e5e5a light / #2f9089 dark). */
+	color: var(--khiip-accent);
+}
+.khiip-mark svg { width: 15px; height: 15px; display: block; }
+/* tonal alternative: a stronger shade of the card's own platform band. */
+.khiip-mark--tonal { color: rgba(var(--callout-color), 0.65); }
+
+/* Identity bar carries the platform tint. */
+.callout[data-callout^="khiip-"] > .callout-title {
+	background-color: rgba(var(--callout-color), 0.12);
+}
+
+/* Header highlight — the background band covers ALL the metadata: the identity
+   bar (callout title, tinted above) + the post title + the meta line. The body
+   below has no background, so content reads as distinct from the metadata.
+   IMPORTANT: only the FIRST title (`h1:first-child`) is highlighted — headings
+   inside the body (a selftext "## Section", etc.) are NOT, since their bold +
+   size already differentiate them (the way the source site shows them). */
+.callout[data-callout^="khiip-"] .callout-content > h1:first-child {
+	background-color: rgba(var(--callout-color), 0.10);
+	margin-top: 0.5em;  /* consistent gap below the identity bar, every source */
+	margin-bottom: 0;
+	padding: 0.3em 0.5em 0.1em;
+	border-radius: 5px 5px 0 0;
+}
+.callout[data-callout^="khiip-"] .callout-content > h1:first-child + p {
+	background-color: rgba(var(--callout-color), 0.10);
+	margin-top: 0;
+	padding: 0.1em 0.5em 0.35em;
+	border-radius: 0 0 5px 5px;
+	color: var(--text-muted);
+	font-size: 0.9em;
+}
+
+/* Author-block header (X + Reddit): the block itself (avatar/icon + name + handle)
+   is the top of the highlight band. */
+.callout[data-callout^="khiip-"] .callout-content > .khiip-author {
+	background-color: rgba(var(--callout-color), 0.10);
+	margin-top: 0.85em;  /* breathing room below the identity bar */
+	margin-bottom: 0;
+	padding: 0.5em 0.5em 0.15em;
+	border-radius: 5px 5px 0 0;
+}
+/* X: the author block is a SELF-CONTAINED identity band — its meta now lives in
+   the footer below the body, so the band closes on the author itself (all four
+   corners rounded). */
+.callout[data-callout="khiip-x"] .callout-content > .khiip-author {
+	border-radius: 5px;
+	padding-bottom: 0.4em;
+}
+/* The tweet body sits plain (NO fill) below the identity band — larger + normal
+   colour so it reads as the post itself, distinct from the muted footer. */
+.callout[data-callout="khiip-x"] .callout-content > .khiip-author + p {
+	font-size: 1.15em;
+	line-height: 1.45;
+	margin: 0.7em 0;
+	color: var(--text-normal);
+}
+/* Reddit + YouTube: a title under the author block continues the band. */
+.callout[data-callout^="khiip-"] .callout-content > .khiip-author + h1 {
+	background-color: rgba(var(--callout-color), 0.10);
+	margin: 0;
+	padding: 0.05em 0.5em;
+}
+/* The meta line under that title closes the band (Reddit = one line). */
+.callout[data-callout^="khiip-"] .callout-content > .khiip-author + h1 + p {
+	background-color: rgba(var(--callout-color), 0.10);
+	margin-top: 0;
+	padding: 0.1em 0.5em 0.4em;
+	border-radius: 0 0 5px 5px;
+	color: var(--text-muted);
+	font-size: 0.9em;
+}
+/* Web — news-masthead band. The site-identity line (favicon + site name +
+   section) OPENS the brand band, the headline continues it, and the byline (author
+   + dates) CLOSES it; the dek/hero/body sit plain below. Site-identity + byline are
+   classed <div>s so the band spans the WHOLE masthead — the generic
+   `h1:first-child` rule doesn't fire here because the identity div is first. */
+.callout[data-callout="khiip-web"] .callout-content > .khiip-web-id {
+	background-color: rgba(var(--callout-color), 0.10);
+	margin-top: 0.5em;
+	margin-bottom: 0;
+	padding: 0.45em 0.5em 0.1em;
+	border-radius: 5px 5px 0 0;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	font-size: 0.9em;
+	color: var(--text-muted);
+}
+.callout[data-callout="khiip-web"] .callout-content > .khiip-web-id .khiip-web-fav {
+	border-radius: 3px;
+	margin-right: 6px;
+	vertical-align: middle;
+}
+.callout[data-callout="khiip-web"] .callout-content > .khiip-web-id b {
+	color: var(--text-normal);
+	font-weight: 600;
+}
+.callout[data-callout="khiip-web"] .callout-content > .khiip-web-id + h1 {
+	background-color: rgba(var(--callout-color), 0.10);
+	margin: 0;
+	padding: 0.1em 0.5em 0.05em;
+}
+/* Byline closes the band (the usual case: news articles have an author). */
+.callout[data-callout="khiip-web"] .callout-content > .khiip-web-id + h1 + .khiip-web-by {
+	background-color: rgba(var(--callout-color), 0.10);
+	margin-top: 0;
+	padding: 0.1em 0.5em 0.45em;
+	border-radius: 0 0 5px 5px;
+	color: var(--text-muted);
+	font-size: 0.85em;
+}
+/* No byline → the headline is the last masthead element, so it closes the band. */
+.callout[data-callout="khiip-web"] .callout-content > .khiip-web-id + h1:not(:has(+ .khiip-web-by)) {
+	border-radius: 0 0 5px 5px;
+	padding-bottom: 0.4em;
+}
+/* Dek / standfirst — the description sits just below the band as a lead-in. */
+.callout[data-callout="khiip-web"] .callout-content > .khiip-web-by + p {
+	font-size: 1.05em;
+	color: var(--text-muted);
+	margin-top: 0.7em;
+}
+
+/* YouTube header — ONE solid-fill card (title → duration → channel + subs →
+   views·date → engagement). A single container, so the fill is seamless with no
+   breaks between rows (the per-element approach left gaps). This is the clean
+   pattern the other sources can move to. */
+.khiip-cardhead {
+	background-color: rgba(var(--callout-color), 0.11);
+	border-radius: 6px;
+	padding: 0.6em 0.75em;
+	margin: 0.6em 0 0.5em;
+}
+.khiip-card-title {
+	font-size: 1.35em;
+	font-weight: 700;
+	line-height: 1.25;
+	margin-bottom: 0.1em;
+}
+.khiip-card-sub,
+.khiip-card-meta {
+	color: var(--text-muted);
+	font-size: 0.9em;
+}
+/* YouTube stats row: bold 'views · date' on the left, like/comment pills in the
+   middle, length on the right — the way the watch page groups it. */
+.khiip-yt-stats {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5em;
+	margin-top: 0.4em;
+	font-size: 0.9em;
+	color: var(--text-muted);
+}
+.khiip-yt-vd {
+	color: var(--text-normal);
+}
+.khiip-yt-eng {
+	display: inline-flex;
+	gap: 0.4em;
+}
+.khiip-yt-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+	padding: 0.15em 0.65em;
+	border-radius: 999px;
+	background-color: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+.khiip-yt-dur {
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+.khiip-cardhead .khiip-author {
+	margin: 0.3em 0;
+	padding: 0;
+}
+
+/* Reddit action bar — the grey rounded pills reddit shows BELOW a post body
+   (upvote ▲ score ▼ + comment bubble + count). A block-level footer, so the
+   body reads in the middle and the meta anchors the bottom (X-style). */
+.khiip-rd-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0.8em 0 0.2em;
+}
+.khiip-rd-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	padding: 0.15em 0.7em;
+	border-radius: 999px;
+	background-color: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+.khiip-rd-count {
+	font-variant-numeric: tabular-nums;
+}
+.khiip-rd-ratio {
+	color: var(--text-muted);
+	font-size: 0.9em;
+	align-self: center;
+}
+
+/* X.com status footer — 'time · date · Views' line, a hairline divider, then
+   the engagement row spread across (💬 🔁 ❤️ 🔖), the way X stamps a tweet
+   below its body. */
+.khiip-xfoot {
+	margin-top: 0.6em;
+	font-size: 0.9em;
+	color: var(--text-muted);
+}
+.khiip-xfoot-meta {
+	padding-bottom: 0.5em;
+}
+.khiip-xfoot-stats {
+	display: flex;
+	justify-content: space-between;
+	border-top: 1px solid rgba(var(--callout-color), 0.22);
+	padding-top: 0.5em;
+}
+.khiip-xfoot-stats > span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+}
+
+/* X native poll — faithful to x.com's poll card: each option is a rounded track
+   holding a proportional fill bar with the label sitting on the bar (left); the
+   percentage is OUTSIDE the track in a right-aligned column; the winning option
+   fills X-poll blue, the rest a muted grey. Degrades to plain text without this
+   CSS (label + pct still read inline). */
+.khiip-poll {
+	margin: 0.7em 0 0.2em;
+}
+.khiip-poll-opt {
+	display: flex;
+	align-items: center;
+	gap: 0.9em;
+	margin: 0.32em 0;
+}
+.khiip-poll-track {
+	position: relative;
+	flex: 1;
+	display: flex;
+	align-items: center;
+	min-height: 2.1em;
+	border-radius: 7px;
+	overflow: hidden;
+}
+.khiip-poll-bar {
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 100%;
+	border-radius: 7px;
+	/* loser fill — muted grey, like x.com's non-winning options */
+	background: rgba(120, 135, 150, 0.26);
+}
+.khiip-poll-won .khiip-poll-bar {
+	/* winner fill — X's poll blue (light, sits behind the dark label) */
+	background: rgba(29, 155, 240, 0.45);
+}
+.khiip-poll-label {
+	position: relative;
+	z-index: 1;
+	padding: 0 0.75em;
+	font-weight: 600;
+}
+.khiip-poll-won .khiip-poll-label {
+	font-weight: 700;
+}
+.khiip-poll-pct {
+	flex: 0 0 auto;
+	min-width: 3.4em;
+	text-align: right;
+	font-weight: 700;
+}
+.khiip-poll-meta {
+	margin-top: 0.5em;
+	font-size: 0.9em;
+	color: var(--text-muted);
+}
+
+/* Web figure caption + photo credit — sits under the hero image. Caption reads
+   as a small italic muted line (news-caption aesthetic); credit is smaller,
+   fainter, and letter-tracked like a real photo credit. */
+.khiip-figmeta {
+	margin-top: -0.35em;
+	margin-bottom: 0.7em;
+}
+.khiip-figcap {
+	display: block;
+	font-size: 0.85em;
+	font-style: italic;
+	line-height: 1.4;
+	color: var(--text-muted);
+}
+.khiip-figcredit {
+	display: block;
+	margin-top: 0.15em;
+	font-size: 0.72em;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--text-faint);
+}
+
+/* X-Article spacing — Obsidian's default <hr> + heading margins leave a big gap
+   between the top activity bar and the body's first heading. X keeps them tight,
+   so pull the body up: tighten the rule below the activity bar and the heading
+   that follows it. Also tightens the in-body dividers (the consecutive `---`). */
+.callout[data-callout="khiip-x"] .callout-content hr {
+	margin: 0.55em 0;
+}
+.callout[data-callout="khiip-x"] .callout-content .khiip-xfoot + hr {
+	margin-top: 0.35em;
+}
+.callout[data-callout="khiip-x"] .callout-content hr + h1,
+.callout[data-callout="khiip-x"] .callout-content hr + h2,
+.callout[data-callout="khiip-x"] .callout-content hr + h3 {
+	margin-top: 0.25em;
+}
+
+/* X quoted-tweet (QRT) — an embedded card, smaller + denser than the main tweet,
+   NO engagement footer (X's quoted card shows only the inline date). The author
+   inside renders in the UNIFORM profile style (same .khiip-author as the main
+   tweet) by default; the "faithful" replica mode (inline avatar in the title) is
+   the seam below. */
+.callout[data-callout="khiip-x"] .callout[data-callout="quote"] {
+	font-size: 0.92em;
+	margin-top: 0.7em;
+}
+/* Uniform QRT (default): keep the author header at the very top of the box (don't
+   reserve a title row that pushes the body down) and OVERLAY just the quote ICON
+   in the box's top-left corner — take the title out of flow (absolute) so nothing
+   shifts. The @handle title TEXT is dropped; the author header + card tint already
+   identify the quoted post. Faithful mode (avatar <img> in the title) keeps its
+   inline title in flow via the :has(img) guard. */
+.callout[data-callout="khiip-x"] .callout[data-callout="quote"] {
+	position: relative;
+}
+.callout[data-callout="khiip-x"] .callout[data-callout="quote"] > .callout-title:not(:has(img)) {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 0;
+	padding: 0.35em 0.45em;
+	pointer-events: none;
+}
+.callout[data-callout="khiip-x"] .callout[data-callout="quote"] > .callout-title:not(:has(img)) > .callout-title-inner {
+	display: none;
+}
+/* "faithful" mode only: the callout title is a flex row, so an inline <img> with
+   no flex-basis gets stretched huge — pin it and stop it flexing. Targets the
+   title <img> directly so it holds even if Obsidian strips the class. */
+.callout[data-callout="khiip-x"] .callout[data-callout="quote"] > .callout-title img,
+.khiip-qrt-pfp {
+	flex: 0 0 auto;
+	width: 20px !important;
+	height: 20px !important;
+	border-radius: 50%;
+	object-fit: cover;
+	vertical-align: -5px;
+	margin-right: 0.15em;
+}
+.khiip-qrt-meta {
+	color: var(--text-muted);
+	font-weight: 400;
+}
+
+/* Reddit flair pill — the subreddit's real flair colour (from the source HTML). */
+.khiip-flair {
+	padding: 0.05em 0.55em;
+	border-radius: 9px;
+	font-size: 0.82em;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.callout[data-callout^="khiip-"] .callout-content {
+	color: var(--text-normal);
+	font-variant-numeric: tabular-nums;
+}
+
+/* X-style author header — circular profile picture on the left, display name
+   (bold, top, in line with the pic's top) + @handle (muted, below) stacked beside
+   it, the way an x.com post header reads. */
+.khiip-author {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.55rem;
+	margin: 0.1rem 0 0.35rem;
+}
+.khiip-pfp {
+	width: 46px;
+	height: 46px;
+	border-radius: 50%;
+	object-fit: cover;
+	flex-shrink: 0;
+}
+
+/* Reddit placeholder avatar — a coloured circle in the user's tracking colour
+   (real reddit avatars aren't reachable credential-free). The post header uses
+   the 46px `.khiip-pfp` size; comment headers use the small inline variant so the
+   same person is recognisable at a glance through a thread. */
+.khiip-ravatar-sm {
+	display: inline-block;
+	width: 1.05em;
+	height: 1.05em;
+	border-radius: 50%;
+	vertical-align: -0.18em;
+	margin-right: 0.3em;
+	flex-shrink: 0;
+}
+.khiip-author-id {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	line-height: 1.3;
+	min-width: 0;
+}
+.khiip-name {
+	font-weight: 700;
+	color: var(--text-normal);
+}
+.khiip-handle {
+	color: var(--text-muted);
+	font-size: 0.9em;
+}
+
+/* ------------------------------------------------------------------ *
+ * Capture URL modal — light brand pass (khipu mark + teal CTA)
+ * ------------------------------------------------------------------ */
+.khiip-modal-header {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.6rem;
+}
+
+/* URL bar — fills the modal's content width exactly (border-box keeps padding +
+   border inside the 100% so it never spills past the popup), giving matched
+   padding on both sides via the modal's own symmetric content padding. */
+.khiip-url-input {
+	width: 100%;
+	box-sizing: border-box;
+	margin-bottom: 0.35rem;
+}
+
+.khiip-url-input:focus {
+	border-color: var(--khiip-accent);
+	box-shadow: 0 0 0 1px var(--khiip-accent);
+}
+
+.khiip-url-hint {
+	color: var(--text-muted);
+	font-size: 0.8em;
+	margin-bottom: 0.75rem;
+}
+
+.khiip-modal-header .khiip-mark {
+	width: 20px;
+	height: 20px;
+	color: var(--khiip-accent);
+	flex-shrink: 0;
+}
+
+.khiip-modal-header h3 {
+	margin: 0;
+}
+
+/* Teal Capture button (overrides Obsidian's default accent on .mod-cta). */
+.khiip-modal button.mod-cta {
+	background-color: var(--khiip-accent);
+}
+
+/* ------------------------------------------------------------------ *
+ * Settings tab
+ * ------------------------------------------------------------------ */
+.khiip-settings-status > div {
+	margin: 0.2rem 0;
+	color: var(--text-muted);
+	font-size: 0.9em;
+}
+
+.khiip-settings-hint {
+	margin-top: 0.6rem !important;
+	font-style: italic;
+	font-size: 0.82em !important;
+}
+
+.khiip-settings-error {
+	color: var(--color-red);
+}

@@ -1,0 +1,85 @@
+name: release
+
+# Trigger on bare-version tags (Obsidian convention — no `v` prefix). The
+# `.npmrc` `tag-version-prefix=""` enforces the bare form when cutting via
+# `npm version`. Manual tag pushes must also be bare versions.
+
+on:
+  push:
+    tags:
+      # Broad glob (matches double-digit segments like 0.10.0 which the
+      # narrower `[0-9]+.[0-9]+.[0-9]+` patterns risk missing under GitHub
+      # Actions' filter-pattern semantics). The verification step below
+      # enforces strict semver — anything that fails the regex aborts the
+      # workflow with a clear error rather than silently shipping garbage.
+      - "*.*.*"
+      - "*.*.*-*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify tag is strict semver
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          if ! [[ "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Tag '${TAG}' is not strict semver MAJOR.MINOR.PATCH(-PRERELEASE)."
+            exit 1
+          fi
+          echo "✓ Tag ${TAG} is strict semver"
+
+      - name: Verify tag matches manifest.version AND package.json version
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          MANIFEST_VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('manifest.json','utf8')).version)")
+          PACKAGE_VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('package.json','utf8')).version)")
+          if [ "$TAG" != "$MANIFEST_VERSION" ]; then
+            echo "::error::Tag '${TAG}' does not match manifest.version '${MANIFEST_VERSION}'. Re-cut via 'npm version <bump>'."
+            exit 1
+          fi
+          if [ "$MANIFEST_VERSION" != "$PACKAGE_VERSION" ]; then
+            echo "::error::manifest.version '${MANIFEST_VERSION}' != package.json version '${PACKAGE_VERSION}'. version-bump.mjs missed one — investigate before releasing."
+            exit 1
+          fi
+          echo "✓ Tag = manifest.version = package.json version = ${TAG}"
+
+      - name: Build plugin
+        run: npm run build
+
+      - name: Verify release artifacts exist
+        run: |
+          set -euo pipefail
+          for f in main.js manifest.json styles.css; do
+            if [ ! -s "$f" ]; then
+              echo "::error::Required release artifact missing or empty: $f"
+              exit 1
+            fi
+          done
+
+      - name: Create GitHub release with plugin artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          # Required by Obsidian community-plugin registry: main.js,
+          # manifest.json, styles.css uploaded as flat assets (NOT zipped).
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --generate-notes \
+            main.js manifest.json styles.css
