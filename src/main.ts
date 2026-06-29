@@ -1,10 +1,10 @@
-import { Notice, Plugin, TFile, WorkspaceLeaf } from "obsidian";
+import { Notice, Plugin, setIcon, TFile, WorkspaceLeaf } from "obsidian";
 import { KhiipClient, KhiipError, discoverApiKey } from "./client";
 import { DEFAULT_SETTINGS, KhiipSettings, KhiipSettingTab } from "./settings";
 import { KHIIP_VIEW_TYPE, KhiipSidebarView } from "./sidebar";
 import { CaptureUrlModal, RecaptureChoiceModal } from "./commands";
 import { normalizeCaptureUrl, urlAtCursor, isCaptureUrl, isLoopbackUrl } from "./url";
-import { registerKhiipIcons, parseIso } from "./brand";
+import { registerKhiipIcons, sourceMeta, parseIso } from "./brand";
 import type { Capture } from "./types";
 
 export default class KhiipPlugin extends Plugin {
@@ -19,6 +19,20 @@ export default class KhiipPlugin extends Plugin {
 		await this.loadSettings();
 		this.rebuildClient();
 		registerKhiipIcons();
+
+		// Paint the source glyph on every `[!khiip-*]` callout imperatively, so the
+		// icon never depends on the CSS `--callout-icon` resolving AFTER the custom
+		// glyphs are registered. A note already open at app launch paints its callout
+		// before onload registers the glyphs, so it would otherwise fall back to
+		// Obsidian's default pencil until a manual reload. This runs on every render
+		// (incl. restored notes) and reuses SOURCE_META as the single icon source.
+		this.registerMarkdownPostProcessor((el) => {
+			el.querySelectorAll<HTMLElement>('.callout[data-callout^="khiip-"]').forEach((callout) => {
+				const src = callout.dataset.callout?.slice("khiip-".length) ?? "";
+				const iconEl = callout.querySelector<HTMLElement>(".callout-icon");
+				if (iconEl) setIcon(iconEl, sourceMeta(src).icon);
+			});
+		});
 
 		this.registerView(KHIIP_VIEW_TYPE, leaf => new KhiipSidebarView(leaf, this));
 
@@ -54,7 +68,7 @@ export default class KhiipPlugin extends Plugin {
 			},
 		});
 
-		this.addRibbonIcon("link", "Khiip — open sidebar", () => { void this.activateSidebar(); });
+		this.addRibbonIcon("khiip-mark", "Khiip — open sidebar", () => { void this.activateSidebar(); });
 
 		// Capture-while-writing: right-click a link (selection, markdown link, or
 		// bare URL under the cursor) in the editor to capture it into the substrate

@@ -33,6 +33,13 @@ export function registerKhiipIcons(): void {
 	for (const [id, path] of Object.entries(BRAND_ICONS)) {
 		addIcon(id, `<path fill="currentColor" transform="scale(4.16667)" d="${path}"/>`);
 	}
+	// The khipu fan mark as a registered glyph — used for the ribbon button and the
+	// sidebar tab/leaf icon so Khiip's most persistent UI carries the brand, not a
+	// generic lucide "link". Multi-element (cords + primary + knots), so it can't ride
+	// the single-path BRAND_ICONS loop; built from the same CORD_PATHS/KNOT_POINTS
+	// geometry as renderKhiipMark, scaled from the mark's "-1 -1 50 50" viewBox into
+	// addIcon's "0 0 100 100" space (×2, then +2 to absorb the -1 origin).
+	addIcon("khiip-mark", khiipMarkGlyph());
 	iconsRegistered = true;
 }
 
@@ -68,6 +75,22 @@ const KNOT_POINTS: Array<[number, number]> = [
 	[29.39, 30.57], [30.63, 36.38], [35.10, 27.40], [37.76, 32.41],
 	[39.73, 21.73], [43.17, 25.17],
 ];
+
+// The khipu fan mark as inner SVG content for `addIcon` (Obsidian wraps it in a
+// 0 0 100 100 <svg>). Same geometry as renderKhiipMark, scaled from the "-1 -1 50 50"
+// viewBox into 0..100: translate(2,2) scale(2) maps -1→0 and 49→100. currentColor so
+// the glyph tints with the ribbon/tab foreground.
+function khiipMarkGlyph(): string {
+	const cords = CORD_PATHS.map((d) => `<path d="${d}"/>`).join("");
+	const knots = KNOT_POINTS.map(([cx, cy]) => `<circle cx="${cx}" cy="${cy}" r="1.9"/>`).join("");
+	return (
+		`<g transform="translate(2,2) scale(2)" fill="none" stroke-linecap="round" stroke-linejoin="round">` +
+		`<g stroke="currentColor" stroke-width="3">${cords}</g>` +
+		`<path d="M14 16 Q24 27 34 16" stroke="currentColor" stroke-width="4"/>` +
+		`<g fill="currentColor">${knots}</g>` +
+		`</g>`
+	);
+}
 
 export function renderKhiipMark(parent: HTMLElement, cls?: string): SVGElement {
 	const svg = parent.createSvg("svg", {

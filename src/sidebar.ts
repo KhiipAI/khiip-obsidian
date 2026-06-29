@@ -31,7 +31,7 @@ export class KhiipSidebarView extends ItemView {
 
 	getViewType(): string { return KHIIP_VIEW_TYPE; }
 	getDisplayText(): string { return "Khiip"; }
-	getIcon(): string { return "link"; }
+	getIcon(): string { return "khiip-mark"; }
 
 	async onOpen(): Promise<void> {
 		this.buildUI();
