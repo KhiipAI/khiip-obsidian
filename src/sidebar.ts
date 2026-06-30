@@ -255,6 +255,13 @@ export class KhiipSidebarView extends ItemView {
 		body.createDiv({ cls: "khiip-result-title", text: capture.title ?? capture.url });
 		const metaRow = body.createDiv({ cls: "khiip-result-meta" });
 		metaRow.createSpan({ cls: `khiip-source khiip-source-${capture.source}`, text: meta.label });
+		// Author of the captured post — sits between the source and the timestamp so you
+		// can scan WHO wrote each capture at a glance (X → display name, YouTube → channel,
+		// Reddit → poster, Web → byline). Omitted when the source carries no single author
+		// (e.g. Wikipedia), so the row gracefully reads "Wikipedia · 6h".
+		if (capture.author) {
+			metaRow.createSpan({ cls: "khiip-row-author", text: capture.author });
+		}
 		const rel = formatRelative(capture.recorded_at);
 		if (rel) metaRow.createSpan({ cls: "khiip-time", text: rel });
 		if (typeof score === "number") {

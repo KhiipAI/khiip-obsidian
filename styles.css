@@ -363,7 +363,20 @@ body {
 .khiip-source-wiki      { --src: var(--khiip-src-wiki); }
 .khiip-source-pdf       { --src: var(--khiip-src-pdf); }
 
+/* Author of the captured post — between the source pill and the timestamp.
+   Weight distinguishes it from the fainter time; ellipsis keeps a long name
+   from pushing the timestamp off the row. */
+.khiip-row-author {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: 500;
+	color: var(--text-muted);
+}
+
 .khiip-time {
+	flex: 0 0 auto;
 	color: var(--text-faint);
 }
 
