@@ -37,13 +37,13 @@ export default class KhiipPlugin extends Plugin {
 		this.registerView(KHIIP_VIEW_TYPE, leaf => new KhiipSidebarView(leaf, this));
 
 		this.addCommand({
-			id: "khiip-capture-url",
+			id: "capture-url",
 			name: "Capture URL",
 			callback: () => { void this.openCaptureModal(); },
 		});
 
 		this.addCommand({
-			id: "khiip-recall",
+			id: "recall",
 			name: "Recall by query",
 			callback: async () => {
 				await this.activateSidebar();
@@ -52,7 +52,7 @@ export default class KhiipPlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: "khiip-open-settings",
+			id: "open-settings",
 			name: "Open daemon settings",
 			callback: () => {
 				// Obsidian's settings dialog isn't on the public API surface;
@@ -112,7 +112,7 @@ export default class KhiipPlugin extends Plugin {
 	}
 
 	async loadSettings(): Promise<void> {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, (await this.loadData()) as Partial<KhiipSettings>);
 		// Defensive: a hand-edited / partially-written data.json could carry
 		// non-string values; coerce so downstream trims / URL parsing can't throw.
 		this.settings.daemonUrl = String(this.settings.daemonUrl || DEFAULT_SETTINGS.daemonUrl);
@@ -294,7 +294,7 @@ export default class KhiipPlugin extends Plugin {
 		for (let i = 0; i < tries; i++) {
 			const f = this.app.vault.getAbstractFileByPath(path);
 			if (f instanceof TFile) return f;
-			await new Promise(resolve => setTimeout(resolve, delayMs));
+			await new Promise(resolve => window.setTimeout(resolve, delayMs));
 		}
 		const f = this.app.vault.getAbstractFileByPath(path);
 		return f instanceof TFile ? f : null;
@@ -312,7 +312,7 @@ export default class KhiipPlugin extends Plugin {
 				await leaf.setViewState({ type: KHIIP_VIEW_TYPE, active: true });
 			}
 		}
-		if (leaf) workspace.revealLeaf(leaf);
+		if (leaf) await workspace.revealLeaf(leaf);
 		return leaf;
 	}
 

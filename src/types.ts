@@ -288,7 +288,7 @@ export type RefetchDimension = "extraction" | "re-extract" | "re-render" | "medi
 export interface Capture {
 	id: string;
 	url: string;
-	source: SourceName | string;          // string fallback for forward-compat
+	source: SourceName | (string & {});   // string fallback for forward-compat (preserves literal autocomplete)
 	vault_path: string;
 	title: string | null;
 	description: string | null;

@@ -73,7 +73,7 @@ export class CaptureUrlModal extends Modal {
 				void this.submit();
 			}
 		});
-		setTimeout(() => {
+		window.setTimeout(() => {
 			input.focus();
 			// Pre-filled from the clipboard: select it so Enter captures as-is while
 			// a keystroke replaces it.

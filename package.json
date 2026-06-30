@@ -1,6 +1,6 @@
 {
 	"name": "khiip-obsidian",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "Khiip plugin for Obsidian — capture URLs to your vault and recall captures semantically via the local Khiip daemon.",
 	"private": true,
 	"main": "main.js",
@@ -23,7 +23,6 @@
 	"license": "Apache-2.0",
 	"devDependencies": {
 		"@types/node": "^20.14.0",
-		"builtin-modules": "^4.0.0",
 		"esbuild": "0.25.5",
 		"obsidian": "^1.7.2",
 		"tslib": "^2.6.3",

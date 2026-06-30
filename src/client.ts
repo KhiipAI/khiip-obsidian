@@ -140,13 +140,13 @@ export class KhiipClient {
 	// may still finish in the background (its result is simply discarded).
 	private withTimeout<R>(p: Promise<R>, timeoutMs = 15_000): Promise<R> {
 		return new Promise<R>((resolve, reject) => {
-			const timer = setTimeout(
+			const timer = window.setTimeout(
 				() => reject(new KhiipError(0, `timed out after ${Math.round(timeoutMs / 1000)}s reaching ${this.safeHostForErrors()}`)),
 				timeoutMs,
 			);
 			p.then(
-				(v) => { clearTimeout(timer); resolve(v); },
-				(e) => { clearTimeout(timer); reject(e); },
+				(v) => { window.clearTimeout(timer); resolve(v); },
+				(e: unknown) => { window.clearTimeout(timer); reject(e instanceof Error ? e : new KhiipError(0, String(e))); },
 			);
 		});
 	}
