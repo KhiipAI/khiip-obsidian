@@ -260,7 +260,12 @@ export class KhiipSidebarView extends ItemView {
 		// Reddit → poster, Web → byline). Omitted when the source carries no single author
 		// (e.g. Wikipedia), so the row gracefully reads "Wikipedia · 6h".
 		if (capture.author) {
-			metaRow.createSpan({ cls: "khiip-row-author", text: capture.author });
+			// Platform-conventional prefix so the sidebar matches the card render —
+			// Reddit shows authors as u/<name>. Guarded so a payload that already
+			// carries the prefix isn't doubled.
+			const author = capture.source === "reddit" && !capture.author.startsWith("u/")
+				? `u/${capture.author}` : capture.author;
+			metaRow.createSpan({ cls: "khiip-row-author", text: author });
 		}
 		const rel = formatRelative(capture.recorded_at);
 		if (rel) metaRow.createSpan({ cls: "khiip-time", text: rel });
