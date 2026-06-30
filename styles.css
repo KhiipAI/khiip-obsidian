@@ -808,6 +808,11 @@ body {
 	font-size: 0.82em;
 	font-weight: 600;
 	white-space: nowrap;
+	/* Default neutral pill — reddit shows even colorless flairs in a grey pill.
+	   An inline `style="background-color:…;color:…"` (set when the payload carries
+	   a flair color) overrides both of these. */
+	background-color: var(--background-modifier-border);
+	color: var(--text-muted);
 }
 
 .callout[data-callout^="khiip-"] .callout-content {
