@@ -2,7 +2,13 @@
 
 Capture URLs into your Obsidian vault and recall them semantically. The plugin is a thin client over the local Khiip daemon ([github.com/KhiipAI/khiip](https://github.com/KhiipAI/khiip)) — the daemon does extraction, embedding, and storage; the plugin gives you a command palette + sidebar surface inside Obsidian.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/KhiipAI/khiip-obsidian/main/assets/obsidian-window.png" alt="A Khiip capture open in Obsidian — the vault file tree across sources, a captured note, and the Khiip recall sidebar (source · author · time)." width="820">
+</p>
+
 > Status: **early release (v0.2)** — actively developed; expect rough edges on some sources.
+>
+> With **[Khiip Plus](https://khiip.com/pricing)** active on the daemon, captures render as per-source styled cards automatically — Plus lives on the daemon, so there's nothing extra to install in Obsidian.
 
 ## What the plugin does
 
