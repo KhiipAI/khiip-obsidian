@@ -34,9 +34,11 @@ By default the plugin makes HTTP requests **only** to your local Khiip daemon on
 
 If you set a **non-local Daemon URL** (e.g. a Tailscale or remote host) in settings, the plugin sends capture/recall requests — and the API key you paste there, as a Bearer token — to that host. Keep remote daemons on a trusted network. All fetching and extraction of captured URLs happens inside the daemon, never in the plugin.
 
-## Install via BRAT (beta channel)
+## Install
 
-The plugin is being submitted to the Obsidian community-plugin directory; until it's searchable in-app, install the beta via [BRAT](https://github.com/TfTHacker/obsidian42-brat):
+Khiip is in the Obsidian **Community plugins** directory: **Settings → Community plugins → Browse → search "Khiip" → Install → Enable**.
+
+To track the newest build before it syncs to the directory, use [BRAT](https://github.com/TfTHacker/obsidian42-brat):
 
 1. Install the **BRAT** community plugin in Obsidian
 2. BRAT settings → **Add Beta Plugin** → `KhiipAI/khiip-obsidian`
